@@ -1,6 +1,5 @@
+import { ROOM_NUMBERS } from "@/constant";
 import { create } from "zustand";
-
-const ROOM_NUMBERS = ["201", "202", "203", "204"];
 
 type RoomInfo = {
   id: string;
@@ -19,6 +18,7 @@ type RoomInfo = {
   };
   services: {
     cleaning: number;
+    person: number;
     washing: number;
     internet: number;
   };
@@ -47,10 +47,10 @@ type State = {
 // Helper function to create a default room with a specific ID
 const createDefaultRoom = (id: string): RoomInfo => ({
   id,
-  price: 0,
-  elec: { start: 0, end: 0, used: 0, price: 0 },
-  water: { start: 0, end: 0, used: 0, price: 0 },
-  services: { cleaning: 0, washing: 0, internet: 0 },
+  price: 4000000,
+  elec: { start: 0, end: 0, used: 0, price: 4200 },
+  water: { start: 0, end: 0, used: 0, price: 35000 },
+  services: { cleaning: 50000, person: 1, washing: 50000, internet: 100000 },
 });
 
 export const useCalculatorStore = create<State>((set, get) => ({
@@ -176,7 +176,9 @@ export const useCalculatorStore = create<State>((set, get) => ({
     const { currentRoom } = get();
     if (!currentRoom) return 0;
     const { services } = currentRoom;
-    return services.cleaning + services.washing + services.internet;
+    return (
+      services.cleaning * services.person + services.washing + services.internet
+    );
   },
 
   calcTotal: () => {

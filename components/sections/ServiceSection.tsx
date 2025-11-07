@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import { InputField, SectionCard } from "../elements";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 
@@ -16,9 +15,14 @@ export function ServiceSection() {
       <div className="space-y-4">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <InputField
-            label="Vệ sinh (₫)"
+            label="Vệ sinh - Thang máy (₫)"
             value={services.cleaning}
             onChange={(v) => setServiceField("cleaning", v)}
+          />
+          <InputField
+            label="Số người"
+            value={services.person}
+            onChange={(v) => setServiceField("person", v)}
           />
           <InputField
             label="Máy giặt (₫)"
