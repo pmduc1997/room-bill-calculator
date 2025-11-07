@@ -1,9 +1,12 @@
 "use client";
-import React from "react";
-import ElectricitySection from "@/components/sections/ElectricitySection";
-import WaterSection from "@/components/sections/WaterSection";
-import ServiceSection from "@/components/sections/ServiceSection";
-import TotalSection from "@/components/sections/TotalSection";
+import {
+  ElectricitySection,
+  RoomPriceSection,
+  RoomSelect,
+  ServiceSection,
+  TotalSection,
+  WaterSection,
+} from "@/components/sections";
 
 export default function Page() {
   return (
@@ -18,6 +21,8 @@ export default function Page() {
 
         {/* Sections */}
         <div className="space-y-5">
+          <RoomSelect />
+          <RoomPriceSection />
           <ElectricitySection />
           <WaterSection />
           <ServiceSection />

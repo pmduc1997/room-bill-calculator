@@ -1,7 +1,6 @@
 "use client";
-import React from "react";
 
-export default function InputField({
+export function InputField({
   label,
   value,
   onChange,
@@ -22,8 +21,18 @@ export default function InputField({
       <input
         type="text"
         inputMode="numeric"
-        value={value}
-        onChange={(e) => onChange?.(Number(e.target.value) || 0)}
+        value={value === 0 ? "" : value}
+        onChange={(e) => {
+          const val = e.target.value;
+          if (val === "" || val === "-") {
+            onChange?.(0);
+          } else {
+            const num = Number(val);
+            if (!isNaN(num)) {
+              onChange?.(num);
+            }
+          }
+        }}
         placeholder={placeholder}
         className="
           w-full

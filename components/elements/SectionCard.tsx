@@ -2,7 +2,7 @@
 "use client";
 import React from "react";
 
-export default function SectionCard({
+export function SectionCard({
   title,
   children,
 }: {

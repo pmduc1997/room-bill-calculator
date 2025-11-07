@@ -1,11 +1,13 @@
 "use client";
 import React from "react";
-import SectionCard from "../elements/SectionCard";
-import InputField from "../elements/InputField";
+import { InputField, SectionCard } from "../elements";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 
-export default function WaterSection() {
-  const { water, setWaterField, calcWaterTotal } = useCalculatorStore();
+const numberFormatter = new Intl.NumberFormat("vi-VN");
+
+export function WaterSection() {
+  const { currentRoom, setWaterField, calcWaterTotal } = useCalculatorStore();
+  const { water } = currentRoom;
   const waterTotal = calcWaterTotal();
 
   return (
@@ -33,7 +35,7 @@ export default function WaterSection() {
         <div className="flex justify-between items-center border-t pt-3 text-sm sm:text-base">
           <span className="font-medium text-gray-700">Thành tiền</span>
           <span className="font-semibold text-blue-600 text-right">
-            {waterTotal.toLocaleString()} ₫
+            {numberFormatter.format(waterTotal)} ₫
           </span>
         </div>
       </div>
