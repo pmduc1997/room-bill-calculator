@@ -1,0 +1,199 @@
+"use client";
+
+import { useMemo, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
+
+import { useCalculatorStore } from "@/store/useCalculatorStore";
+
+const currency = new Intl.NumberFormat("vi-VN");
+
+const BANK = "BIDV";
+const ACCOUNT = "1600592248";
+
+export default function InvoicePage() {
+  const router = useRouter();
+  const {
+    currentRoom,
+    calcTotal,
+    calcElecTotal,
+    calcWaterTotal,
+    calcServiceTotal,
+  } = useCalculatorStore();
+
+  const issuedAt = useMemo(() => new Date().toLocaleString("vi-VN"), []);
+
+  const rentTotal = currentRoom?.price ?? 0;
+  const elecTotal = calcElecTotal();
+  const waterTotal = calcWaterTotal();
+  const serviceTotal = calcServiceTotal();
+  const grandTotal = calcTotal();
+  const month = new Date().toLocaleString("en-US", { month: "2-digit" });
+
+  const addInfo = `Tien+Phong+${currentRoom?.id ?? "Unknown"}+thang+${month}`;
+  const qrSrc = `https://img.vietqr.io/image/${BANK}-${ACCOUNT}-compact2.png?amount=${grandTotal}&addInfo=${addInfo}&accountName=TRAN%20THI%20HUONG`;
+
+  return (
+    <main className="min-h-screen bg-linear-to-b from-blue-50 to-white text-gray-900">
+      <div className="mx-auto w-full max-w-md pb-6">
+        <header className="flex items-center justify-between px-4 py-2">
+          <button
+            onClick={() => router.push("/")}
+            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+          >
+            ← Trở về
+          </button>
+          <div className="text-right text-xs text-gray-500">
+            <p>Xuất: {issuedAt}</p>
+          </div>
+        </header>
+
+        <section className="bg-white p-5 shadow-lg space-y-4">
+          <div className="flex justify-center font-bold">
+            HÓA ĐƠN THÁNG {month}
+          </div>
+          <div className="grid grid-cols-2 gap-y-2 text-sm">
+            <div className="text-gray-500">Phòng</div>
+            <div className="text-right font-semibold">
+              {currentRoom?.id ?? "--"}
+            </div>
+            <div className="text-gray-500">Tiền phòng</div>
+            <div className="text-right font-semibold">
+              {currency.format(rentTotal)} ₫
+            </div>
+          </div>
+
+          <div className="space-y-4 text-sm">
+            <Section title="Điện" amount={elecTotal}>
+              <Row
+                label="Chỉ số đầu"
+                value={currentRoom?.elec.start}
+                suffix="kWh"
+              />
+              <Row
+                label="Chỉ số cuối"
+                value={currentRoom?.elec.end}
+                suffix="kWh"
+              />
+              <Row
+                label="Tiêu thụ"
+                value={currentRoom?.elec.used}
+                suffix="kWh"
+              />
+              <Row label="Đơn giá" value={currentRoom?.elec.price} suffix="₫" />
+            </Section>
+
+            <Section title="Nước" amount={waterTotal}>
+              <Row
+                label="Chỉ số đầu"
+                value={currentRoom?.water.start}
+                suffix="m³"
+              />
+              <Row
+                label="Chỉ số cuối"
+                value={currentRoom?.water.end}
+                suffix="m³"
+              />
+              <Row
+                label="Tiêu thụ"
+                value={currentRoom?.water.used}
+                suffix="m³"
+              />
+              <Row
+                label="Đơn giá"
+                value={currentRoom?.water.price}
+                suffix="₫"
+              />
+            </Section>
+
+            <Section title="Dịch vụ" amount={serviceTotal}>
+              <Row
+                label="Vệ sinh"
+                value={currentRoom?.services.cleaning}
+                suffix="₫ / người"
+              />
+              <Row label="Số người" value={currentRoom?.services.person} />
+              <Row
+                label="Máy giặt"
+                value={currentRoom?.services.washing}
+                suffix="₫"
+              />
+              <Row
+                label="Mạng"
+                value={currentRoom?.services.internet}
+                suffix="₫"
+              />
+            </Section>
+          </div>
+
+          <div className="flex items-center gap-4 rounded-xl ">
+            <img
+              src={qrSrc}
+              alt="QR chuyển khoản"
+              className="w-36 rounded-lg border border-gray-100"
+            />
+            <div className="flex-1 space-y-1 text-xs text-gray-700">
+              <p className="font-semibold text-sm text-gray-900">THÔNG TIN</p>
+              <InfoRow label="Ngân hàng" value={BANK} />
+              <InfoRow label="STK" value={ACCOUNT} />
+              <InfoRow label="Nội dung" value={addInfo.replace(/\+/g, " ")} />
+              <InfoRow label="Người nhận" value="TRAN THI HUONG" />
+              <InfoRow
+                label="Số tiền"
+                value={`${currency.format(grandTotal)} ₫`}
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+
+function Section({
+  title,
+  amount,
+  children,
+}: {
+  title: string;
+  amount: number;
+  children: ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-gray-300 p-3">
+      <div className="flex items-center justify-between text-sm font-semibold text-gray-700">
+        <span>{title}</span>
+        <span className="text-blue-600">{currency.format(amount)} ₫</span>
+      </div>
+      <div className="mt-3 space-y-1 text-xs text-gray-600">{children}</div>
+    </div>
+  );
+}
+
+function Row({
+  label,
+  value,
+  suffix,
+}: {
+  label: string;
+  value: number | undefined;
+  suffix?: string;
+}) {
+  return (
+    <div className="flex justify-between">
+      <span>{label}</span>
+      <span className="font-medium">
+        {value ?? 0}
+        {suffix ? ` ${suffix}` : ""}
+      </span>
+    </div>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-2">
+      <span className="text-gray-500">{label}</span>
+      <span className="text-right font-medium text-gray-900">{value}</span>
+    </div>
+  );
+}
