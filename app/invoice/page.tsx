@@ -49,15 +49,11 @@ export default function InvoicePage() {
 
         <section className="bg-white p-5 shadow-lg space-y-4">
           <div className="flex justify-center font-bold">
-            HÓA ĐƠN THÁNG {month}
+            HÓA ĐƠN PHÒNG {currentRoom?.id} THÁNG {month}
           </div>
           <div className="grid grid-cols-2 gap-y-2 text-sm">
-            <div className="text-gray-500">Phòng</div>
-            <div className="text-right font-semibold">
-              {currentRoom?.id ?? "--"}
-            </div>
-            <div className="text-gray-500">Tiền phòng</div>
-            <div className="text-right font-semibold">
+            <div className="font-semibold">Tiền phòng</div>
+            <div className="text-right font-semibold text-blue-600">
               {currency.format(rentTotal)} ₫
             </div>
           </div>
@@ -79,7 +75,11 @@ export default function InvoicePage() {
                 value={currentRoom?.elec.used}
                 suffix="kWh"
               />
-              <Row label="Đơn giá" value={currentRoom?.elec.price} suffix="₫" />
+              <Row
+                label="Đơn giá"
+                value={currency.format(currentRoom?.elec.price)}
+                suffix="₫"
+              />
             </Section>
 
             <Section title="Nước" amount={waterTotal}>
@@ -100,7 +100,7 @@ export default function InvoicePage() {
               />
               <Row
                 label="Đơn giá"
-                value={currentRoom?.water.price}
+                value={currency.format(currentRoom?.water.price)}
                 suffix="₫"
               />
             </Section>
@@ -108,24 +108,32 @@ export default function InvoicePage() {
             <Section title="Dịch vụ" amount={serviceTotal}>
               <Row
                 label="Vệ sinh"
-                value={currentRoom?.services.cleaning}
+                value={currency.format(currentRoom?.services.cleaning)}
                 suffix="₫ / người"
               />
               <Row label="Số người" value={currentRoom?.services.person} />
               <Row
                 label="Máy giặt"
-                value={currentRoom?.services.washing}
+                value={currency.format(currentRoom?.services.washing)}
                 suffix="₫"
               />
               <Row
                 label="Mạng"
-                value={currentRoom?.services.internet}
+                value={currency.format(currentRoom?.services.internet)}
                 suffix="₫"
               />
             </Section>
+            <div className="px-2">
+              <div className="flex items-center justify-between text-sm font-semibold text-gray-700">
+                <span className="text-lg">Tổng</span>
+                <span className="text-blue-600 text-lg">
+                  {currency.format(calcTotal())} ₫
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4 rounded-xl ">
+          <div className="flex items-start gap-4 rounded-xl">
             <img
               src={qrSrc}
               alt="QR chuyển khoản"
@@ -137,10 +145,6 @@ export default function InvoicePage() {
               <InfoRow label="STK" value={ACCOUNT} />
               <InfoRow label="Nội dung" value={addInfo.replace(/\+/g, " ")} />
               <InfoRow label="Người nhận" value="TRAN THI HUONG" />
-              <InfoRow
-                label="Số tiền"
-                value={`${currency.format(grandTotal)} ₫`}
-              />
             </div>
           </div>
         </section>
@@ -175,7 +179,7 @@ function Row({
   suffix,
 }: {
   label: string;
-  value: number | undefined;
+  value: string | number | undefined;
   suffix?: string;
 }) {
   return (
