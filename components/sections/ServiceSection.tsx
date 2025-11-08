@@ -20,9 +20,9 @@ export function ServiceSection() {
             onChange={(v) => setServiceField("cleaning", v)}
           />
           <InputField
-            label="Số người"
-            value={services.person}
-            onChange={(v) => setServiceField("person", v)}
+            label="Mạng (₫)"
+            value={services.internet}
+            onChange={(v) => setServiceField("internet", v)}
           />
           <InputField
             label="Máy giặt (₫)"
@@ -30,9 +30,9 @@ export function ServiceSection() {
             onChange={(v) => setServiceField("washing", v)}
           />
           <InputField
-            label="Mạng (₫)"
-            value={services.internet}
-            onChange={(v) => setServiceField("internet", v)}
+            label="Số người"
+            value={services.person}
+            onChange={(v) => setServiceField("person", v)}
           />
         </div>
 

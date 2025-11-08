@@ -28,9 +28,12 @@ export default function InvoicePage() {
   const serviceTotal = calcServiceTotal();
   const grandTotal = calcTotal();
   const month = new Date().toLocaleString("en-US", { month: "2-digit" });
+  const year = new Date().getFullYear();
 
-  const addInfo = `Tien+Phong+${currentRoom?.id ?? "Unknown"}+thang+${month}`;
+  const addInfo = `${currentRoom?.id ?? "Unknown"}`;
   const qrSrc = `https://img.vietqr.io/image/${BANK}-${ACCOUNT}-compact2.png?amount=${grandTotal}&addInfo=${addInfo}&accountName=TRAN%20THI%20HUONG`;
+
+  if (!currentRoom.id) return <div>Lỗi mã phòng, cần sửa!</div>;
 
   return (
     <main className="min-h-screen bg-linear-to-b from-blue-50 to-white text-gray-900">
@@ -49,7 +52,7 @@ export default function InvoicePage() {
 
         <section className="bg-white p-5 md:p-8 shadow-lg space-y-4 md:space-y-6">
           <div className="flex justify-center font-bold text-base md:text-xl">
-            HÓA ĐƠN PHÒNG {currentRoom?.id} THÁNG {month}
+            HÓA ĐƠN P{currentRoom?.id} THÁNG {month}/{year}
           </div>
           <div className="grid grid-cols-2 text-sm md:text-base">
             <div className="font-semibold">Tiền phòng</div>
@@ -109,12 +112,6 @@ export default function InvoicePage() {
               <Row
                 label="Vệ sinh"
                 value={currency.format(currentRoom?.services.cleaning)}
-                suffix="₫ / người"
-              />
-              <Row label="Số người" value={currentRoom?.services.person} />
-              <Row
-                label="Máy giặt"
-                value={currency.format(currentRoom?.services.washing)}
                 suffix="₫"
               />
               <Row
@@ -122,6 +119,12 @@ export default function InvoicePage() {
                 value={currency.format(currentRoom?.services.internet)}
                 suffix="₫"
               />
+              <Row
+                label="Máy giặt"
+                value={currency.format(currentRoom?.services.washing)}
+                suffix="₫ / người"
+              />
+              <Row label="Số người" value={currentRoom?.services.person} />
             </Section>
             <div className="border-t border-gray-300 pt-2 md:pt-3">
               <div className="flex items-center justify-between text-sm md:text-base font-semibold text-gray-700">
@@ -166,7 +169,7 @@ function Section({
 }) {
   return (
     <div className="border-t border-gray-300 pt-2 md:pt-3">
-      <div className="flex items-center justify-between text-sm md:text-base font-semibold text-gray-700">
+      <div className="flex items-center justify-between text-sm md:text-base font-semibold text-gray-700 mb-1">
         <span>{title}</span>
         <span className="text-blue-600">{currency.format(amount)} ₫</span>
       </div>

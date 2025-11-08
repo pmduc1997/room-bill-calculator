@@ -177,7 +177,7 @@ export const useCalculatorStore = create<State>((set, get) => ({
     if (!currentRoom) return 0;
     const { services } = currentRoom;
     return (
-      services.cleaning * services.person + services.washing + services.internet
+      services.washing * services.person + services.cleaning + services.internet
     );
   },
 
