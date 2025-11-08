@@ -34,31 +34,31 @@ export default function InvoicePage() {
 
   return (
     <main className="min-h-screen bg-linear-to-b from-blue-50 to-white text-gray-900">
-      <div className="mx-auto w-full max-w-md pb-6">
-        <header className="flex items-center justify-between px-4 py-2">
+      <div className="mx-auto w-full max-w-md md:max-w-2xl pb-6 md:pb-8">
+        <header className="flex items-center justify-between px-4 md:px-6 py-2 md:py-3">
           <button
             onClick={() => router.push("/")}
-            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+            className="text-sm md:text-base font-medium text-blue-600 hover:text-blue-700"
           >
             ← Trở về
           </button>
-          <div className="text-right text-xs text-gray-500">
+          <div className="text-right text-xs md:text-sm text-gray-500">
             <p>Xuất: {issuedAt}</p>
           </div>
         </header>
 
-        <section className="bg-white p-5 shadow-lg space-y-4">
-          <div className="flex justify-center font-bold">
+        <section className="bg-white p-5 md:p-8 shadow-lg space-y-4 md:space-y-6">
+          <div className="flex justify-center font-bold text-base md:text-xl">
             HÓA ĐƠN PHÒNG {currentRoom?.id} THÁNG {month}
           </div>
-          <div className="grid grid-cols-2 gap-y-2 text-sm">
+          <div className="grid grid-cols-2 text-sm md:text-base">
             <div className="font-semibold">Tiền phòng</div>
             <div className="text-right font-semibold text-blue-600">
               {currency.format(rentTotal)} ₫
             </div>
           </div>
 
-          <div className="space-y-4 text-sm">
+          <div className="space-y-2 md:space-y-3 text-sm md:text-base">
             <Section title="Điện" amount={elecTotal}>
               <Row
                 label="Chỉ số đầu"
@@ -123,24 +123,26 @@ export default function InvoicePage() {
                 suffix="₫"
               />
             </Section>
-            <div className="px-2">
-              <div className="flex items-center justify-between text-sm font-semibold text-gray-700">
-                <span className="text-lg">Tổng</span>
-                <span className="text-blue-600 text-lg">
+            <div className="border-t border-gray-300 pt-2 md:pt-3">
+              <div className="flex items-center justify-between text-sm md:text-base font-semibold text-gray-700">
+                <span className="text-lg md:text-xl">Tổng</span>
+                <span className="text-blue-600 text-lg md:text-xl">
                   {currency.format(calcTotal())} ₫
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-start gap-4 rounded-xl">
+          <div className="flex items-start gap-4 md:gap-6 rounded-xl">
             <img
               src={qrSrc}
               alt="QR chuyển khoản"
-              className="w-36 rounded-lg border border-gray-100"
+              className="w-36 md:w-48 rounded-lg border border-gray-100"
             />
-            <div className="flex-1 space-y-1 text-xs text-gray-700">
-              <p className="font-semibold text-sm text-gray-900">THÔNG TIN</p>
+            <div className="flex-1 space-y-1 md:space-y-2 text-xs md:text-sm text-gray-700">
+              <p className="font-semibold text-sm md:text-base text-gray-900">
+                THÔNG TIN
+              </p>
               <InfoRow label="Ngân hàng" value={BANK} />
               <InfoRow label="STK" value={ACCOUNT} />
               <InfoRow label="Nội dung" value={addInfo.replace(/\+/g, " ")} />
@@ -163,12 +165,14 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-gray-300 p-3">
-      <div className="flex items-center justify-between text-sm font-semibold text-gray-700">
+    <div className="border-t border-gray-300 pt-2 md:pt-3">
+      <div className="flex items-center justify-between text-sm md:text-base font-semibold text-gray-700">
         <span>{title}</span>
         <span className="text-blue-600">{currency.format(amount)} ₫</span>
       </div>
-      <div className="mt-3 space-y-1 text-xs text-gray-600">{children}</div>
+      <div className="space-y-1 md:space-y-2 text-xs md:text-sm text-gray-600">
+        {children}
+      </div>
     </div>
   );
 }
@@ -195,7 +199,7 @@ function Row({
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-2">
+    <div className="flex justify-between gap-2 md:gap-4">
       <span className="text-gray-500">{label}</span>
       <span className="text-right font-medium text-gray-900">{value}</span>
     </div>
