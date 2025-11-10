@@ -31,7 +31,7 @@ export function ElectricitySection() {
           />
         </div>
 
-        <div className="flex justify-between items-center border-t border-gray-200 pt-3">
+        <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600 font-medium">Thành tiền</span>
           <span className="text-lg font-semibold text-blue-600">
             {numberFormatter.format(elecTotal)} ₫

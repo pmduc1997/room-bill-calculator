@@ -110,14 +110,14 @@ export default function InvoicePage() {
 
             <Section title="Dịch vụ" amount={serviceTotal}>
               <Row
-                label="Vệ sinh"
-                value={currency.format(currentRoom?.services.cleaning)}
-                suffix="₫"
-              />
-              <Row
                 label="Mạng"
                 value={currency.format(currentRoom?.services.internet)}
                 suffix="₫"
+              />
+              <Row
+                label="Vệ sinh + Thang máy / người"
+                value={currency.format(currentRoom?.services.cleaning)}
+                suffix="₫ / người"
               />
               <Row
                 label="Máy giặt"
