@@ -7,8 +7,8 @@ import { useCalculatorStore } from "@/store/useCalculatorStore";
 
 const currency = new Intl.NumberFormat("vi-VN");
 
-const BANK = "BIDV";
-const ACCOUNT = "1600592248";
+const BANK = "VCB";
+const ACCOUNT = "0301000335411";
 
 export default function InvoicePage() {
   const router = useRouter();
