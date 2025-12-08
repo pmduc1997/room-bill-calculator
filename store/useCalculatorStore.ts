@@ -1,4 +1,4 @@
-import { ROOM_NUMBERS } from "@/constant";
+import { DEFAULT_ROOM_INFO, ROOM_NUMBERS } from "@/constant";
 import { create } from "zustand";
 
 type RoomInfo = {
@@ -47,10 +47,7 @@ type State = {
 // Helper function to create a default room with a specific ID
 const createDefaultRoom = (id: string): RoomInfo => ({
   id,
-  price: 4000000,
-  elec: { start: 0, end: 0, used: 0, price: 4200 },
-  water: { start: 0, end: 0, used: 0, price: 35000 },
-  services: { cleaning: 50000, person: 1, washing: 50000, internet: 100000 },
+  ...DEFAULT_ROOM_INFO,
 });
 
 export const useCalculatorStore = create<State>((set, get) => ({

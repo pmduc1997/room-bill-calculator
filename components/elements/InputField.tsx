@@ -1,5 +1,7 @@
 "use client";
 
+import { NumericFormat } from "react-number-format";
+
 export function InputField({
   label,
   value,
@@ -18,22 +20,17 @@ export function InputField({
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
       <label className="text-xs font-medium text-gray-700">{label}</label>
-      <input
-        type="text"
-        inputMode="numeric"
+      <NumericFormat
         value={value === 0 ? "" : value}
-        onChange={(e) => {
-          const val = e.target.value;
-          if (val === "" || val === "-") {
-            onChange?.(0);
-          } else {
-            const num = Number(val);
-            if (!isNaN(num)) {
-              onChange?.(num);
-            }
-          }
+        onValueChange={(values) => {
+          const { floatValue } = values;
+          onChange?.(floatValue ?? 0);
         }}
         placeholder={placeholder}
+        allowNegative={false}
+        decimalScale={0}
+        thousandSeparator={true}
+        allowLeadingZeros={false}
         className="
           w-full
           rounded-md
