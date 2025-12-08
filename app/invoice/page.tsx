@@ -4,11 +4,9 @@ import { useMemo, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 import { useCalculatorStore } from "@/store/useCalculatorStore";
+import { BANK_INFO } from "@/constant";
 
 const currency = new Intl.NumberFormat("vi-VN");
-
-const BANK = "VCB";
-const ACCOUNT = "0301000335411";
 
 export default function InvoicePage() {
   const router = useRouter();
@@ -30,8 +28,10 @@ export default function InvoicePage() {
   const month = new Date().toLocaleString("en-US", { month: "2-digit" });
   const year = new Date().getFullYear();
 
+  const accountNameEncoded = encodeURIComponent(BANK_INFO.accountName);
+
   const addInfo = `${currentRoom?.id ?? "Unknown"}`;
-  const qrSrc = `https://img.vietqr.io/image/${BANK}-${ACCOUNT}-compact2.png?amount=${grandTotal}&addInfo=${addInfo}&accountName=TRAN%20THI%20HUONG`;
+  const qrSrc = `https://img.vietqr.io/image/${BANK_INFO.bankName}-${BANK_INFO.accountNumber}-compact2.png?amount=${grandTotal}&addInfo=${addInfo}&accountName=${accountNameEncoded}`;
 
   if (!currentRoom.id) return <div>Lỗi mã phòng, cần sửa!</div>;
 
@@ -146,10 +146,10 @@ export default function InvoicePage() {
               <p className="font-semibold text-sm md:text-base text-gray-900">
                 THÔNG TIN
               </p>
-              <InfoRow label="Ngân hàng" value={BANK} />
-              <InfoRow label="STK" value={ACCOUNT} />
+              <InfoRow label="Ngân hàng" value={BANK_INFO.bankName} />
+              <InfoRow label="STK" value={BANK_INFO.accountNumber} />
               <InfoRow label="Nội dung" value={addInfo.replace(/\+/g, " ")} />
-              <InfoRow label="Người nhận" value="TRAN THI HUONG" />
+              <InfoRow label="Người nhận" value={BANK_INFO.accountName} />
             </div>
           </div>
         </section>

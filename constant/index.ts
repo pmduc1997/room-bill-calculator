@@ -21,3 +21,9 @@ export const DEFAULT_ROOM_INFO = {
   water: { start: 0, end: 0, used: 0, price: 35000 },
   services: { cleaning: 100000, person: 1, washing: 50000, internet: 50000 },
 };
+
+export const BANK_INFO = {
+  bankName: "VCB",
+  accountNumber: "0301000335411",
+  accountName: "TRAN THI HUONG",
+};
