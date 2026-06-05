@@ -1,0 +1,28 @@
+{
+  "bank": {
+    "name": "VCB",
+    "accountNumber": "0301000335411",
+    "accountName": "TRAN THI HUONG"
+  },
+  "elecPrice": 4200,
+  "waterPrice": 35000,
+  "cleaning": 100000,
+  "washing": 50000,
+  "internet": 100000,
+  "rooms": [
+    { "id": "201", "price": 4000000 },
+    { "id": "202", "price": 4000000 },
+    { "id": "203", "price": 4000000 },
+    { "id": "204", "price": 4000000 },
+    { "id": "301", "price": 4000000 },
+    { "id": "302", "price": 4000000 },
+    { "id": "303", "price": 4000000 },
+    { "id": "304", "price": 4000000 },
+    { "id": "401", "price": 4000000 },
+    { "id": "402", "price": 4000000 },
+    { "id": "403", "price": 4000000 },
+    { "id": "404", "price": 4000000 },
+    { "id": "601", "price": 4000000 },
+    { "id": "602", "price": 4000000 }
+  ]
+}
