@@ -16,10 +16,13 @@ function validateConfig(data: unknown): data is ApartmentConfig {
   if (typeof bank.accountName !== "string") return false;
   if (typeof d.elecPrice !== "number") return false;
   if (typeof d.waterPrice !== "number") return false;
-  if (typeof d.roomPrice !== "number") return false;
   if (typeof d.cleaning !== "number") return false;
   if (typeof d.washing !== "number") return false;
   if (typeof d.internet !== "number") return false;
+  if (!Array.isArray(d.rooms) || d.rooms.length === 0) return false;
+  for (const room of d.rooms) {
+    if (typeof room.id !== "string" || typeof room.price !== "number") return false;
+  }
   return true;
 }
 

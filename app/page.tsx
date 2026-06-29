@@ -5,17 +5,17 @@ import { useCalculatorStore } from "@/store/useCalculatorStore";
 import {
   ElectricitySection,
   RoomPriceSection,
-  RoomInput,
+  RoomSelect,
   ServiceSection,
   WaterSection,
 } from "@/components/sections";
-// import { ImportButton } from "@/components/ImportButton";
+import { ImportButton } from "@/components/ImportButton";
 
 const fmt = new Intl.NumberFormat("vi-VN");
 
 export default function Page() {
   const router = useRouter();
-  const { calcTotal } = useCalculatorStore();
+  const { currentRoom, calcTotal } = useCalculatorStore();
   const total = calcTotal();
 
   const month = new Date().toLocaleString("en-US", { month: "2-digit" });
@@ -26,23 +26,23 @@ export default function Page() {
       {/* Sticky header */}
       <header className="sticky top-0 z-50 bg-white border-b border-brand-border">
         <div className="mx-auto max-w-lg px-4 py-3 flex items-center justify-between gap-3">
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0">
             <h1 className="text-sm font-bold text-brand-ink leading-tight">
               Hóa đơn thu tiền
             </h1>
             <p className="text-xs text-brand-muted">
-              Tháng {month}/{year}
+              Phòng {currentRoom.id} · Tháng {month}/{year}
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <RoomInput />
-            {/* <ImportButton /> */}
+            <ImportButton />
+            <RoomSelect />
           </div>
         </div>
       </header>
 
       {/* Form body */}
-      <main className="flex-1 mx-auto w-full max-w-lg px-4 py-5 space-y-3 pb-8">
+      <main className="flex-1 mx-auto w-full max-w-lg px-4 py-5 space-y-3 pb-36">
         <RoomPriceSection />
         <ElectricitySection />
         <WaterSection />
