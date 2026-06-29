@@ -2,22 +2,27 @@
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { InputField, SectionCard } from "../elements";
 
-const fmt = new Intl.NumberFormat("vi-VN");
+const currencyFormatter = new Intl.NumberFormat("vi-VN");
 
 export function RoomPriceSection() {
   const { currentRoom, setRoomField } = useCalculatorStore();
   return (
     <SectionCard title="Tiền phòng">
-      <InputField
-        label="Giá thuê (₫/tháng)"
-        value={currentRoom.price}
-        onChange={(v) => setRoomField("price", v)}
-      />
-      <div className="flex justify-between items-center pt-1">
-        <span className="text-xs text-brand-muted">Thành tiền</span>
-        <span className="text-sm font-semibold text-brand-accent tabular-nums">
-          {fmt.format(currentRoom.price)} ₫
-        </span>
+      <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <InputField
+            label="Tiền phòng"
+            value={currentRoom.price}
+            onChange={(v) => setRoomField("price", v)}
+          />
+        </div>
+
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-gray-600 font-medium">Thành tiền</span>
+          <span className="text-lg font-semibold text-blue-600">
+            {currencyFormatter.format(currentRoom.price)} ₫
+          </span>
+        </div>
       </div>
     </SectionCard>
   );
