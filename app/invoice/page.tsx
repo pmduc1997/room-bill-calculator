@@ -49,7 +49,7 @@ export default function InvoicePage() {
         </header>
 
         {/* Invoice body */}
-        <section className="bg-white mx-4 mt-4 rounded-2xl shadow-sm border border-brand-border overflow-hidden">
+        <section className="bg-white mx-4 mt-1 rounded-2xl shadow-sm border border-brand-border overflow-hidden">
           {/* Invoice title bar */}
           <div className="bg-brand-primary px-6 py-5 text-white">
             <p className="text-xs font-medium opacity-70 uppercase tracking-wide">
@@ -60,7 +60,7 @@ export default function InvoicePage() {
             </h1>
           </div>
 
-          <div className="px-5 py-5 md:px-8 md:py-6 space-y-4">
+          <div className="px-5 py-5 md:px-8 md:py-6 space-y-2">
             {/* Room rent */}
             <div className="flex justify-between text-sm">
               <span className="text-brand-muted font-medium">Tiền phòng</span>
@@ -94,7 +94,7 @@ export default function InvoicePage() {
             </Section>
 
             {/* Grand total */}
-            <div className="border-t border-brand-border pt-4 flex items-center justify-between">
+            <div className="border-t border-brand-border pt-2 flex items-center justify-between">
               <span className="text-base font-semibold text-brand-ink">Tổng thanh toán</span>
               <span className="text-xl font-bold text-brand-accent tabular-nums">
                 {currency.format(grandTotal)} ₫
@@ -135,7 +135,7 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <div className="border-t border-brand-border pt-4">
+    <div className="border-t border-brand-border pt-2">
       <div className="flex justify-between items-center mb-2">
         <span className="text-sm font-semibold text-brand-ink">{title}</span>
         <span className="text-sm font-semibold text-brand-accent tabular-nums">
