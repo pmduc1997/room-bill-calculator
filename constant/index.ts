@@ -8,19 +8,18 @@ export type ApartmentConfig = {
   };
   elecPrice: number;
   waterPrice: number;
+  roomPrice: number;
   cleaning: number;
   washing: number;
   internet: number;
-  rooms: Array<{ id: string; price: number }>;
 };
 
 export const DEFAULT_CONFIG: ApartmentConfig = defaultConfig;
 
-// Derived constants kept for backward compatibility
-export const ROOM_NUMBERS = defaultConfig.rooms.map((r) => r.id);
+export const DEFAULT_ROOM_ID = "201";
 
 export const DEFAULT_ROOM_INFO = {
-  price: defaultConfig.rooms[0]?.price ?? 4000000,
+  price: defaultConfig.roomPrice,
   elec: { start: 0, end: 0, used: 0, price: defaultConfig.elecPrice },
   water: { start: 0, end: 0, used: 0, price: defaultConfig.waterPrice },
   services: {

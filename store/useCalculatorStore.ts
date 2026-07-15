@@ -1,4 +1,4 @@
-import { DEFAULT_CONFIG, DEFAULT_ROOM_INFO, ROOM_NUMBERS, type ApartmentConfig } from "@/constant";
+import { DEFAULT_CONFIG, DEFAULT_ROOM_ID, DEFAULT_ROOM_INFO, type ApartmentConfig } from "@/constant";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -67,49 +67,31 @@ const defaultBankInfo: BankInfo = {
 export const useCalculatorStore = create<State>()(
   persist(
     (set, get) => ({
-      rooms: ROOM_NUMBERS.reduce(
-        (acc, id) => ({ ...acc, [id]: createDefaultRoom(id) }),
-        {} as Record<string, RoomInfo>
-      ),
-      currentRoom: createDefaultRoom(ROOM_NUMBERS[0]),
+      rooms: { DEFAULT_ROOM_ID: createDefaultRoom(DEFAULT_ROOM_ID) },
+      currentRoom: createDefaultRoom(DEFAULT_ROOM_ID),
       bankInfo: defaultBankInfo,
 
       loadConfig: (config: ApartmentConfig) =>
         set((state) => {
-          const newRooms: Record<string, RoomInfo> = {};
-          for (const roomDef of config.rooms) {
-            const existing = state.rooms[roomDef.id];
-            newRooms[roomDef.id] = {
-              id: roomDef.id,
-              price: roomDef.price,
-              elec: {
-                start: existing?.elec.start ?? 0,
-                end: existing?.elec.end ?? 0,
-                used: existing?.elec.used ?? 0,
-                price: config.elecPrice,
-              },
-              water: {
-                start: existing?.water.start ?? 0,
-                end: existing?.water.end ?? 0,
-                used: existing?.water.used ?? 0,
-                price: config.waterPrice,
-              },
+          const updatedRooms: Record<string, RoomInfo> = {};
+          for (const [id, existing] of Object.entries(state.rooms)) {
+            updatedRooms[id] = {
+              ...existing,
+              price: config.roomPrice,
+              elec: { ...existing.elec, price: config.elecPrice },
+              water: { ...existing.water, price: config.waterPrice },
               services: {
+                ...existing.services,
                 cleaning: config.cleaning,
                 washing: config.washing,
                 internet: config.internet,
-                person: existing?.services.person ?? 1,
               },
             };
           }
-
-          const newCurrentId = newRooms[state.currentRoom.id]
-            ? state.currentRoom.id
-            : config.rooms[0]?.id ?? state.currentRoom.id;
-
+          const updatedCurrent = updatedRooms[state.currentRoom.id] ?? state.currentRoom;
           return {
-            rooms: newRooms,
-            currentRoom: newRooms[newCurrentId] ?? state.currentRoom,
+            rooms: updatedRooms,
+            currentRoom: updatedCurrent,
             bankInfo: {
               bankName: config.bank.name,
               accountNumber: config.bank.accountNumber,
@@ -134,7 +116,7 @@ export const useCalculatorStore = create<State>()(
 
       resetRoom: () =>
         set((state) => {
-          const id = state.currentRoom?.id || ROOM_NUMBERS[0];
+          const id = state.currentRoom?.id || DEFAULT_ROOM_ID;
           const defaultRoomData = createDefaultRoom(id);
           return {
             rooms: { ...state.rooms, [id]: defaultRoomData },
@@ -144,7 +126,7 @@ export const useCalculatorStore = create<State>()(
 
       setRoomField: (k, v) =>
         set((state) => {
-          const id = state.currentRoom?.id || ROOM_NUMBERS[0];
+          const id = state.currentRoom?.id || DEFAULT_ROOM_ID;
           const existingRoom = state.rooms[id] || createDefaultRoom(id);
           const room = { ...existingRoom, [k]: v };
           return { rooms: { ...state.rooms, [id]: room }, currentRoom: { ...room } };
@@ -152,7 +134,7 @@ export const useCalculatorStore = create<State>()(
 
       setElecField: (k, v) =>
         set((state) => {
-          const id = state.currentRoom?.id || ROOM_NUMBERS[0];
+          const id = state.currentRoom?.id || DEFAULT_ROOM_ID;
           const existingRoom = state.rooms[id] || createDefaultRoom(id);
           const elec = { ...existingRoom.elec, [k]: v };
           elec.used = Math.max(0, elec.end - elec.start);
@@ -162,7 +144,7 @@ export const useCalculatorStore = create<State>()(
 
       setWaterField: (k, v) =>
         set((state) => {
-          const id = state.currentRoom?.id || ROOM_NUMBERS[0];
+          const id = state.currentRoom?.id || DEFAULT_ROOM_ID;
           const existingRoom = state.rooms[id] || createDefaultRoom(id);
           const water = { ...existingRoom.water, [k]: v };
           water.used = Math.max(0, water.end - water.start);
@@ -172,7 +154,7 @@ export const useCalculatorStore = create<State>()(
 
       setServiceField: (k, v) =>
         set((state) => {
-          const id = state.currentRoom?.id || ROOM_NUMBERS[0];
+          const id = state.currentRoom?.id || DEFAULT_ROOM_ID;
           const existingRoom = state.rooms[id] || createDefaultRoom(id);
           const services = { ...existingRoom.services, [k]: v };
           const updated = { ...existingRoom, services };
