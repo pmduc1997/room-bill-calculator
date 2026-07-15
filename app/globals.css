@@ -1,26 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand palette — deep green primary, warm amber accent */
+  --brand-bg: oklch(1.000 0.000 0);
+  --brand-surface: oklch(0.975 0.008 140);
+  --brand-primary: oklch(0.350 0.110 140);
+  --brand-primary-hover: oklch(0.280 0.110 140);
+  --brand-primary-subtle: oklch(0.945 0.032 140);
+  --brand-accent: oklch(0.440 0.155 58);
+  --brand-ink: oklch(0.180 0.018 145);
+  --brand-muted: oklch(0.460 0.018 145);
+  --brand-border: oklch(0.900 0.012 140);
+  --brand-error: oklch(0.520 0.200 25);
+  --brand-error-bg: oklch(0.970 0.040 25);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-brand-bg: var(--brand-bg);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-brand-primary-subtle: var(--brand-primary-subtle);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-muted: var(--brand-muted);
+  --color-brand-border: var(--brand-border);
+  --color-brand-error: var(--brand-error);
+  --color-brand-error-bg: var(--brand-error-bg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--brand-bg);
+  color: var(--brand-ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }

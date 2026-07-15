@@ -1,4 +1,3 @@
-// src/components/SectionCard.tsx
 "use client";
 import React from "react";
 
@@ -10,9 +9,9 @@ export function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white border-t border-gray-200 pt-3 mb-3">
+    <div className="bg-brand-surface rounded-xl p-4 space-y-4">
       {title && (
-        <h3 className="text-lg font-semibold mb-3 text-black">{title}</h3>
+        <h3 className="text-sm font-semibold text-brand-ink">{title}</h3>
       )}
       {children}
     </div>
