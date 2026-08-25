@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, type ReactNode } from "react";
+import { useMemo, useRef, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 import { useCalculatorStore } from "@/store/useCalculatorStore";
@@ -9,6 +9,7 @@ const currency = new Intl.NumberFormat("vi-VN");
 
 export default function InvoicePage() {
   const router = useRouter();
+  const billRef = useRef<HTMLElement>(null);
   const {
     currentRoom,
     bankInfo,
@@ -25,18 +26,47 @@ export default function InvoicePage() {
   const waterTotal = calcWaterTotal();
   const serviceTotal = calcServiceTotal();
   const grandTotal = calcTotal();
-  const month = new Date().toLocaleString("en-US", { month: "2-digit" });
-  const year = new Date().getFullYear();
-
   const accountNameEncoded = encodeURIComponent(bankInfo.accountName);
   const addInfo = `${currentRoom?.id ?? "Unknown"}`;
   const qrSrc = `https://img.vietqr.io/image/${bankInfo.bankName}-${bankInfo.accountNumber}-compact2.png?amount=${grandTotal}&addInfo=${addInfo}&accountName=${accountNameEncoded}`;
+
+  async function handleDownload() {
+    if (!billRef.current) return;
+
+    const { toPng } = await import("html-to-image");
+
+    const now = new Date();
+    const stamp = `${now.getMonth() + 1}-${now.getFullYear()}`;
+
+    const { offsetWidth, offsetHeight } = billRef.current;
+
+    const dataUrl = await toPng(billRef.current, {
+      pixelRatio: 3,
+      cacheBust: true,
+      fetchRequestInit: { mode: "cors" },
+      width: offsetWidth,
+      height: offsetHeight,
+      style: {
+        margin: "0",
+        borderRadius: "0",
+      },
+    });
+
+    const link = document.createElement("a");
+    link.download = `hoadon-phong${currentRoom?.id ?? ""}-${stamp}.png`;
+    link.href = dataUrl;
+    link.click();
+  }
+
+  function handleShare() {
+    // TODO: implement share
+  }
 
   if (!currentRoom.id) return <div>Lỗi mã phòng, cần sửa!</div>;
 
   return (
     <main className="min-h-screen bg-brand-bg text-brand-ink">
-      <div className="mx-auto w-full max-w-md md:max-w-2xl pb-8">
+      <div className="mx-auto w-full max-w-md md:max-w-2xl pb-28">
         {/* Header */}
         <header className="flex items-center justify-between px-4 md:px-6 py-3 border-b border-brand-border">
           <button
@@ -45,26 +75,26 @@ export default function InvoicePage() {
           >
             ← Trở về
           </button>
-          <p className="text-xs text-brand-muted">Xuất: {issuedAt}</p>
         </header>
 
         {/* Invoice body */}
-        <section className="bg-white mx-4 mt-1 rounded-2xl shadow-sm border border-brand-border overflow-hidden">
+        <section
+          ref={billRef}
+          className="bg-white mx-4 mt-1 rounded-xl shadow-sm border border-brand-border overflow-hidden"
+        >
           {/* Invoice title bar */}
-          <div className="bg-brand-primary px-6 py-5 text-white">
-            <p className="text-xs font-medium opacity-70 uppercase tracking-wide">
-              Hóa đơn
-            </p>
-            <h1 className="text-lg font-bold mt-1">
-              Phòng {currentRoom?.id} · Tháng {month}/{year}
+          <div className="bg-brand-primary px-4 py-3 text-white">
+            <h1 className="text-lg font-bold">
+              Hóa đơn phòng {currentRoom?.id}
             </h1>
+            <p className="text-xs opacity-70 mt-0.5">Xuất ngày: {issuedAt}</p>
           </div>
 
-          <div className="px-5 py-5 md:px-8 md:py-6 space-y-2">
+          <div className="px-5 py-4 md:px-8 md:py-6 space-y-2">
             {/* Room rent */}
             <div className="flex justify-between text-sm">
               <span className="text-brand-muted font-medium">Tiền phòng</span>
-              <span className="font-semibold text-brand-accent tabular-nums">
+              <span className="font-semibold text-brand-accent tabular-nums whitespace-nowrap">
                 {currency.format(rentTotal)} ₫
               </span>
             </div>
@@ -96,13 +126,13 @@ export default function InvoicePage() {
             {/* Grand total */}
             <div className="border-t border-brand-border pt-2 flex items-center justify-between">
               <span className="text-base font-semibold text-brand-ink">Tổng thanh toán</span>
-              <span className="text-xl font-bold text-brand-accent tabular-nums">
+              <span className="text-xl font-bold text-brand-accent tabular-nums whitespace-nowrap">
                 {currency.format(grandTotal)} ₫
               </span>
             </div>
 
             {/* QR + bank info */}
-            <div className="flex items-start gap-5 pt-2">
+            <div className="flex items-start gap-3 pt-2">
               <img
                 src={qrSrc}
                 alt="QR chuyển khoản"
@@ -118,10 +148,53 @@ export default function InvoicePage() {
                 <InfoRow label="Người nhận" value={bankInfo.accountName} />
               </div>
             </div>
+
           </div>
         </section>
       </div>
+
+      {/* Sticky action bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-brand-border px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+        <div className="mx-auto w-full max-w-md md:max-w-2xl flex gap-3">
+          <button
+            onClick={handleShare}
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-brand-border text-brand-ink text-sm font-medium transition-colors hover:bg-brand-bg active:scale-95"
+          >
+            <ShareIcon />
+            Chia sẻ
+          </button>
+          <button
+            onClick={handleDownload}
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-semibold transition-colors hover:bg-brand-primary-hover active:scale-95"
+          >
+            <DownloadIcon />
+            Lưu ảnh
+          </button>
+        </div>
+      </div>
     </main>
+  );
+}
+
+function DownloadIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  );
+}
+
+function ShareIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+    </svg>
   );
 }
 
@@ -138,7 +211,7 @@ function Section({
     <div className="border-t border-brand-border pt-2">
       <div className="flex justify-between items-center mb-2">
         <span className="text-sm font-semibold text-brand-ink">{title}</span>
-        <span className="text-sm font-semibold text-brand-accent tabular-nums">
+        <span className="text-sm font-semibold text-brand-accent tabular-nums whitespace-nowrap">
           {currency.format(amount)} ₫
         </span>
       </div>
@@ -159,7 +232,7 @@ function Row({
   return (
     <div className="flex justify-between">
       <span>{label}</span>
-      <span className="font-medium text-brand-ink tabular-nums">
+      <span className="font-medium text-brand-ink tabular-nums whitespace-nowrap">
         {value ?? 0}
         {suffix ? ` ${suffix}` : ""}
       </span>
