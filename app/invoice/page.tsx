@@ -37,6 +37,7 @@ export default function InvoicePage() {
 
     const now = new Date();
     const stamp = `${now.getMonth() + 1}-${now.getFullYear()}`;
+    const filename = `hoadon-phong${currentRoom?.id ?? ""}-${stamp}.png`;
 
     const { offsetWidth, offsetHeight } = billRef.current;
 
@@ -52,8 +53,22 @@ export default function InvoicePage() {
       },
     });
 
+    // Try Web Share API (works on iOS Safari 15+)
+    if (typeof navigator.share === "function") {
+      try {
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], filename, { type: "image/png" });
+        await navigator.share({ files: [file], title: filename });
+        return;
+      } catch {
+        // User cancelled or share failed — fall through
+      }
+    }
+
+    // Desktop: anchor download
     const link = document.createElement("a");
-    link.download = `hoadon-phong${currentRoom?.id ?? ""}-${stamp}.png`;
+    link.download = filename;
     link.href = dataUrl;
     link.click();
   }
@@ -66,7 +81,7 @@ export default function InvoicePage() {
 
   return (
     <main className="min-h-screen bg-brand-bg text-brand-ink">
-      <div className="mx-auto w-full max-w-md md:max-w-2xl pb-28">
+      <div className="mx-auto w-full max-w-md md:max-w-2xl pb-8">
         {/* Header */}
         <header className="flex items-center justify-between px-4 md:px-6 py-3 border-b border-brand-border">
           <button
@@ -143,7 +158,7 @@ export default function InvoicePage() {
                   Thông tin chuyển khoản
                 </p>
                 <InfoRow label="Ngân hàng" value={bankInfo.bankName} />
-                <InfoRow label="Số tài khoản" value={bankInfo.accountNumber} />
+                <InfoRow label="STK" value={bankInfo.accountNumber} />
                 <InfoRow label="Nội dung" value={addInfo.replace(/\+/g, " ")} />
                 <InfoRow label="Người nhận" value={bankInfo.accountName} />
               </div>
@@ -151,11 +166,8 @@ export default function InvoicePage() {
 
           </div>
         </section>
-      </div>
-
-      {/* Sticky action bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-brand-border px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-        <div className="mx-auto w-full max-w-md md:max-w-2xl flex gap-3">
+        {/* Action bar */}
+        <div className="px-4 pt-4 flex gap-3">
           <button
             onClick={handleShare}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-brand-border text-brand-ink text-sm font-medium transition-colors hover:bg-brand-bg active:scale-95"
