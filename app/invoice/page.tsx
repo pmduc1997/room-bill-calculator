@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, type ReactNode } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 import { useCalculatorStore } from "@/store/useCalculatorStore";
@@ -10,6 +10,7 @@ const currency = new Intl.NumberFormat("vi-VN");
 export default function InvoicePage() {
   const router = useRouter();
   const billRef = useRef<HTMLElement>(null);
+  const [qrOpen, setQrOpen] = useState(false);
   const {
     currentRoom,
     bankInfo,
@@ -39,7 +40,21 @@ export default function InvoicePage() {
     const stamp = `${now.getMonth() + 1}-${now.getFullYear()}`;
     const filename = `hoadon-phong${currentRoom?.id ?? ""}-${stamp}.png`;
 
-    const { width, height } = billRef.current.getBoundingClientRect();
+    // Pre-fetch QR as data URL to avoid CORS canvas taint on iOS Safari
+    let qrDataUrl: string | null = null;
+    try {
+      const res = await fetch(qrSrc, { mode: "cors" });
+      const blob = await res.blob();
+      qrDataUrl = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(blob);
+      });
+    } catch {
+      // If fetch fails, html-to-image will try on its own
+    }
+
+    const { scrollWidth: width, scrollHeight: height } = billRef.current;
 
     const opts = {
       pixelRatio: 3,
@@ -47,6 +62,11 @@ export default function InvoicePage() {
       fetchRequestInit: { mode: "cors" } as RequestInit,
       width,
       height,
+      onclone: (_doc: Document, el: HTMLElement) => {
+        if (!qrDataUrl) return;
+        const img = el.querySelector('img[alt="QR chuyển khoản"]') as HTMLImageElement | null;
+        if (img) img.src = qrDataUrl;
+      },
     };
 
     // First call loads fonts/resources; second call renders correctly on iOS
@@ -148,11 +168,17 @@ export default function InvoicePage() {
 
             {/* QR + bank info */}
             <div className="flex items-start gap-3 pt-2">
-              <img
-                src={qrSrc}
-                alt="QR chuyển khoản"
-                className="w-32 md:w-40 rounded-xl border border-brand-border shrink-0"
-              />
+              <button
+                onClick={() => setQrOpen(true)}
+                className="shrink-0 rounded-xl focus:outline-none active:scale-95 transition-transform"
+                aria-label="Xem QR toàn màn hình"
+              >
+                <img
+                  src={qrSrc}
+                  alt="QR chuyển khoản"
+                  className="w-32 md:w-40 rounded-xl border border-brand-border"
+                />
+              </button>
               <div className="flex-1 space-y-1.5 text-xs text-brand-muted">
                 <p className="text-sm font-semibold text-brand-ink mb-2">
                   Thông tin chuyển khoản
@@ -184,6 +210,20 @@ export default function InvoicePage() {
           </button>
         </div>
       </div>
+      {/* QR fullscreen modal */}
+      {qrOpen && (
+        <div
+          onClick={() => setQrOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-8"
+        >
+          <img
+            src={qrSrc}
+            alt="QR chuyển khoản"
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-xs rounded-2xl shadow-2xl"
+          />
+        </div>
+      )}
     </main>
   );
 }
