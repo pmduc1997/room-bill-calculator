@@ -39,19 +39,19 @@ export default function InvoicePage() {
     const stamp = `${now.getMonth() + 1}-${now.getFullYear()}`;
     const filename = `hoadon-phong${currentRoom?.id ?? ""}-${stamp}.png`;
 
-    const { offsetWidth, offsetHeight } = billRef.current;
+    const { width, height } = billRef.current.getBoundingClientRect();
 
-    const dataUrl = await toPng(billRef.current, {
+    const opts = {
       pixelRatio: 3,
       cacheBust: true,
-      fetchRequestInit: { mode: "cors" },
-      width: offsetWidth,
-      height: offsetHeight,
-      style: {
-        margin: "0",
-        borderRadius: "0",
-      },
-    });
+      fetchRequestInit: { mode: "cors" } as RequestInit,
+      width,
+      height,
+    };
+
+    // First call loads fonts/resources; second call renders correctly on iOS
+    await toPng(billRef.current, opts);
+    const dataUrl = await toPng(billRef.current, opts);
 
     // Try Web Share API (works on iOS Safari 15+)
     if (typeof navigator.share === "function") {
