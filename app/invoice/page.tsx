@@ -21,6 +21,10 @@ export default function InvoicePage() {
   } = useCalculatorStore();
 
   const issuedAt = useMemo(() => new Date().toLocaleString("vi-VN"), []);
+  const billingMonth = useMemo(() => {
+    const now = new Date();
+    return `${now.getMonth() + 1}`;
+  }, []);
 
   const rentTotal = currentRoom?.price ?? 0;
   const elecTotal = calcElecTotal();
@@ -120,7 +124,7 @@ export default function InvoicePage() {
           {/* Invoice title bar */}
           <div className="bg-brand-primary px-4 py-3 text-white">
             <h1 className="text-lg font-bold">
-              Hóa đơn phòng {currentRoom?.id}
+              Hóa đơn phòng {currentRoom?.id} tháng {billingMonth}
             </h1>
             <p className="text-xs opacity-70 mt-0.5">Xuất ngày: {issuedAt}</p>
           </div>
